@@ -1,0 +1,87 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+require(tidyverse)
+require(R.utils)
+```
+
+
+```{r}
+setwd("C:/Users/aaron/Desktop/Home Credit Default Risk Competition")
+data.bureau <- read.csv("bureau.csv")
+data.bureau_balance <- read.csv("bureau_balance.csv")
+```
+
+## Data Exploration
+
+First, we check for duplicate rows.
+```{r}
+nrow(data.bureau) - nrow(unique(data.bureau))
+```
+There are no duplicate rows in the data frame that could influence the quality of the data (analyses).
+
+```{r}
+nrow(data.bureau_balance) - nrow(unique(data.bureau_balance))
+```
+There are no duplicate rows in the data frame that could influence the quality of the data (analyses).
+
+Now, we check for features with only one unique value.
+```{r}
+col_ct = sapply(data.bureau, function(x) length(unique(x)))
+cat("Constant feature count:", length(col_ct[col_ct==1]))
+```
+No constant features are within the data frame. This has also no impact on the subsequent data analyses. 
+
+```{r}
+col_ct = sapply(data.bureau_balance, function(x) length(unique(x)))
+cat("Constant feature count:", length(col_ct[col_ct==1]))
+```
+No constant features are within the data frame. This has also no impact on the subsequent data analyses. 
+
+The feature levels need to be explored next.
+```{r}
+str(lapply(data.bureau, unique), vec.len = 4)
+```
+```{r}
+str(lapply(data.bureau_balance, unique), vec.len = 4)
+```
+
+Next, we change the following classes.
+```{r}
+#Change the IDs to characters.
+data.bureau.clean <- data.bureau %>% 
+  mutate(SK_ID_CURR  = as.character(SK_ID_CURR ),
+         SK_ID_BUREAU = as.character(SK_ID_BUREAU))
+data.bureau_balance.clean <- data.bureau_balance %>% 
+  mutate(SK_ID_BUREAU = as.character(SK_ID_BUREAU))
+```
+
+To learn more about the missing values, we check the proportion of "NA" values per feature.
+```{r}
+data.bureau.clean %>% summarise_all(funs(100*mean(is.na(.))))
+```
+```{r}
+data.bureau_balance.clean %>% summarise_all(funs(100*mean(is.na(.))))
+```
+
+We look at those features in detail.
+```{r}
+#filter the NA patterned features
+byNA.data.bureau.clean <- data.bureau.clean %>% 
+  filter(is.na(DAYS_CREDIT_ENDDATE) &
+         is.na(DAYS_ENDDATE_FACT) &
+         is.na(AMT_CREDIT_MAX_OVERDUE) &
+         is.na(AMT_CREDIT_SUM) &
+         is.na(AMT_CREDIT_SUM_DEBT) &
+         is.na(AMT_CREDIT_SUM_DEBT) &
+         is.na(AMT_ANNUITY))
+
+#show the remaining levels in the factor features
+str(lapply(droplevels(byNA.data.bureau.clean), unique), vec.len = 4)
+```
+
+
+## Imputation 
