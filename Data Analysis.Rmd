@@ -52,25 +52,26 @@ str(lapply(data.bureau_balance, unique), vec.len = 4)
 Next, we change the following classes.
 ```{r}
 #Change the IDs to characters.
-data.bureau.clean <- data.bureau %>% 
+data.bureau <- data.bureau %>% 
   mutate(SK_ID_CURR  = as.character(SK_ID_CURR ),
          SK_ID_BUREAU = as.character(SK_ID_BUREAU))
 data.bureau_balance.clean <- data.bureau_balance %>% 
+data.bureau_balance <- data.bureau_balance %>% 
   mutate(SK_ID_BUREAU = as.character(SK_ID_BUREAU))
 ```
 
 To learn more about the missing values, we check the proportion of "NA" values per feature.
 ```{r}
-data.bureau.clean %>% summarise_all(funs(100*mean(is.na(.))))
+data.bureau %>% summarise_all(funs(100*mean(is.na(.))))
 ```
 ```{r}
-data.bureau_balance.clean %>% summarise_all(funs(100*mean(is.na(.))))
+data.bureau_balance %>% summarise_all(funs(100*mean(is.na(.))))
 ```
 
 We look at those features in detail.
 ```{r}
 #filter the NA patterned features
-byNA.data.bureau.clean <- data.bureau.clean %>% 
+byNA.data.bureau <- data.bureau %>% 
   filter(is.na(DAYS_CREDIT_ENDDATE) &
          is.na(DAYS_ENDDATE_FACT) &
          is.na(AMT_CREDIT_MAX_OVERDUE) &
@@ -80,7 +81,13 @@ byNA.data.bureau.clean <- data.bureau.clean %>%
          is.na(AMT_ANNUITY))
 
 #show the remaining levels in the factor features
-str(lapply(droplevels(byNA.data.bureau.clean), unique), vec.len = 4)
+str(lapply(droplevels(byNA.data.bureau), unique), vec.len = 4)
+```
+
+```{r}
+contains.missing <- data.bureau %>% 
+  select_if(function(x) any(is.na(x))) 
+glimpse(contains.missing) 
 ```
 
 
