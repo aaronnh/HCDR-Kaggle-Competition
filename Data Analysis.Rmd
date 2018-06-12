@@ -13,7 +13,8 @@ require(R.utils)
 setwd("C:/Users/aaron/Desktop/Home Credit Default Risk Competition")
 data.bureau <- read.csv("bureau.csv")
 data.bureau_balance <- read.csv("bureau_balance.csv")
-```
+data.train <- read.csv("application_train.csv")
+  ```
 
 ## Data Exploration
 
@@ -90,4 +91,8 @@ glimpse(contains.missing)
 ```
 
 
-## Imputation 
+## Merging the data
+```{r}
+data.merge.final <- merge(data.bureau, data.train, all.x = TRUE,by = "SK_ID_CURR")
+```
+
