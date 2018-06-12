@@ -55,7 +55,6 @@ Next, we change the following classes.
 data.bureau <- data.bureau %>% 
   mutate(SK_ID_CURR  = as.character(SK_ID_CURR ),
          SK_ID_BUREAU = as.character(SK_ID_BUREAU))
-data.bureau_balance.clean <- data.bureau_balance %>% 
 data.bureau_balance <- data.bureau_balance %>% 
   mutate(SK_ID_BUREAU = as.character(SK_ID_BUREAU))
 ```
